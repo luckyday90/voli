@@ -144,6 +144,12 @@ export default function FlightMap() {
         }
       });
       
+      if (typeof response.data === 'string' && response.data.trim().startsWith('<')) {
+         setError('Backend API not configured correctly on host server.');
+         setFlights([]);
+         return;
+      }
+
       if (response.data && response.data.states) {
         if (response.data._warning) {
           setWarning(response.data._warning);
@@ -227,6 +233,13 @@ export default function FlightMap() {
             lon: selectedFlight.longitude
           }
         });
+
+        if (typeof response.data === 'string' && response.data.trim().startsWith('<')) {
+          setWeatherError('Weather API not available on this domain.');
+          setWeather(null);
+          return;
+        }
+
         setWeather(response.data);
       } catch (err: any) {
         console.error('Failed to fetch weather:', err);
@@ -254,6 +267,13 @@ export default function FlightMap() {
           params: { fr24_id: selectedFlight.fr24_id }
         });
         
+        if (typeof response.data === 'string' && response.data.trim().startsWith('<')) {
+          setFlightTrail([]);
+          setFlightOrigin(null);
+          setFlightDestination(null);
+          return;
+        }
+
         const data = response.data;
         
         // Parse historical trail
